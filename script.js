@@ -64,30 +64,42 @@ function createButton(name) {
   document.getElementById("buttons").appendChild(btn);
 }
 
-// 칸 클릭 → 입력
+// 클릭 입력 (🔥 여기 안정화)
 cells.forEach(cell => {
-  const index = cell.dataset.index;
+  const index = Number(cell.dataset.index);
 
   cell.addEventListener("click", () => {
-    if (!currentPerson) return;
+    if (!currentPerson) {
+      alert("먼저 사람을 추가하세요");
+      return;
+    }
 
     const subject = prompt(`${currentPerson} 과목 입력`);
 
-    if (subject !== null) {
-      schedules[currentPerson][index] = subject;
-      saveData();
-      updateUI();
-    }
+    if (subject === null) return;
+
+    schedules[currentPerson][index] = subject;
+    saveData();
+    updateUI();
   });
 });
 
-// UI 업데이트
+// UI 업데이트 (🔥 이름 + 과목 표시 포함)
 function updateUI() {
   cells.forEach(cell => {
-    const index = cell.dataset.index;
+    const index = Number(cell.dataset.index);
 
     const active = selected.length ? selected : [currentPerson];
-    const peopleWithClass = active.filter(name => schedules[name][index]);
+
+    if (!active[0]) {
+      cell.textContent = "";
+      cell.style.background = "";
+      return;
+    }
+
+    const peopleWithClass = active
+      .filter(name => schedules[name][index])
+      .map(name => `${name}(${schedules[name][index]})`);
 
     cell.textContent = "";
     cell.style.color = "black";
@@ -105,7 +117,7 @@ function updateUI() {
   });
 }
 
-// 🔥 현재 사람 초기화
+// 현재 사람 초기화
 function resetCurrent() {
   if (!currentPerson) return;
 
@@ -116,7 +128,7 @@ function resetCurrent() {
   }
 }
 
-// 🔥 전체 초기화
+// 전체 초기화
 function resetData() {
   if (confirm("전체 데이터를 초기화할까요?")) {
     localStorage.removeItem("timetableData");

@@ -2,31 +2,13 @@ body {
   font-family: sans-serif;
   text-align: center;
   background-color: #f5f5f5;
-  margin: 0;
   padding: 20px;
 }
 
-h1 {
-  margin-bottom: 20px;
-}
-
-/* 입력 영역 */
 .controls {
   margin-bottom: 15px;
 }
 
-.controls input {
-  padding: 6px;
-  width: 150px;
-}
-
-.controls button {
-  padding: 6px 10px;
-  margin-left: 5px;
-  cursor: pointer;
-}
-
-/* 사람 버튼 */
 #buttons {
   margin-bottom: 15px;
 }
@@ -40,18 +22,12 @@ h1 {
   border-radius: 5px;
 }
 
-#buttons button:hover {
-  background: #bbb;
-}
-
-/* 선택된 버튼 */
 button.selected {
   background-color: #4CAF50;
   color: white;
   font-weight: bold;
 }
 
-/* 시간표 */
 .timetable {
   display: grid;
   grid-template-columns: 60px repeat(5, 1fr);
@@ -60,26 +36,21 @@ button.selected {
   margin: auto;
 }
 
-/* 요일 */
 .header {
   font-weight: bold;
   background: #333;
   color: white;
   padding: 10px;
-  border-radius: 5px;
 }
 
-/* 시간 칸 (버그 해결된 부분🔥) */
 .time {
   background: #eee;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
 }
 
-/* 수업 칸 */
 .cell {
   border: 1px solid #ccc;
   height: 60px;
@@ -87,12 +58,5 @@ button.selected {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 5px;
   background: white;
-  transition: 0.2s;
-}
-
-/* 호버 */
-.cell:hover {
-  background: #e0f7fa;
 }
