@@ -4,6 +4,24 @@ let schedules = {}; // {이름: []}
 let selected = [];
 let currentPerson = null;
 
+// 🔥 데이터 저장
+function saveData() {
+  localStorage.setItem("timetableData", JSON.stringify(schedules));
+}
+
+// 🔥 데이터 불러오기
+function loadData() {
+  const data = localStorage.getItem("timetableData");
+
+  if (data) {
+    schedules = JSON.parse(data);
+
+    for (let name in schedules) {
+      createButton(name);
+    }
+  }
+}
+
 // 사람 추가
 function addPerson() {
   const name = document.getElementById("nameInput").value;
@@ -15,6 +33,8 @@ function addPerson() {
   if (!currentPerson) currentPerson = name;
 
   document.getElementById("nameInput").value = "";
+
+  saveData(); // 추가 후 저장
 }
 
 // 버튼 생성
@@ -25,10 +45,10 @@ function createButton(name) {
   btn.onclick = () => {
     if (selected.includes(name)) {
       selected = selected.filter(n => n !== name);
-      btn.style.background = "";
+      btn.classList.remove("selected");
     } else {
       selected.push(name);
-      btn.style.background = "#87CEFA";
+      btn.classList.add("selected");
     }
     updateUI();
   };
@@ -41,7 +61,7 @@ function createButton(name) {
   document.getElementById("buttons").appendChild(btn);
 }
 
-// 클릭해서 입력
+// 칸 클릭 → 시간표 입력
 cells.forEach(cell => {
   const index = cell.dataset.index;
 
@@ -52,6 +72,7 @@ cells.forEach(cell => {
 
     if (subject !== null) {
       schedules[currentPerson][index] = subject;
+      saveData(); // 🔥 입력할 때마다 저장
       updateUI();
     }
   });
@@ -67,6 +88,7 @@ function updateUI() {
     const peopleWithClass = active.filter(name => schedules[name][index]);
 
     cell.textContent = "";
+    cell.style.color = "black";
 
     if (active.length === 0) {
       cell.style.background = "";
@@ -74,7 +96,7 @@ function updateUI() {
     }
 
     if (peopleWithClass.length === 0) {
-      // 공강
+      // 공강 → 표시 안 함
       cell.textContent = "";
       cell.style.background = "";
     } else if (peopleWithClass.length === active.length) {
@@ -86,7 +108,10 @@ function updateUI() {
       // 일부만 수업
       cell.textContent = peopleWithClass.join(", ");
       cell.style.background = "orange";
-      cell.style.color = "black";
     }
   });
 }
+
+// 🔥 페이지 로드 시 실행
+loadData();
+updateUI();
