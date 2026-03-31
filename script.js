@@ -1,58 +1,92 @@
 const cells = document.querySelectorAll(".cell");
 
-let mySchedule = [];
-let friendSchedule = [];
+let schedules = {}; // {이름: []}
+let selected = [];
+let currentPerson = null;
 
-let currentMode = "me"; // 현재 입력 모드
+// 사람 추가
+function addPerson() {
+  const name = document.getElementById("nameInput").value;
+  if (!name || schedules[name]) return;
 
-function setMode(mode) {
-  currentMode = mode;
-  alert(mode === "me" ? "내 시간표 입력 모드" : "친구 시간표 입력 모드");
+  schedules[name] = Array(45).fill(""); // 9교시 x 5일
+  createButton(name);
+
+  if (!currentPerson) currentPerson = name;
+
+  document.getElementById("nameInput").value = "";
 }
 
-// 초기화
-cells.forEach((cell, index) => {
-  mySchedule[index] = "";
-  friendSchedule[index] = "";
+// 버튼 생성
+function createButton(name) {
+  const btn = document.createElement("button");
+  btn.textContent = name;
+
+  btn.onclick = () => {
+    if (selected.includes(name)) {
+      selected = selected.filter(n => n !== name);
+      btn.style.background = "";
+    } else {
+      selected.push(name);
+      btn.style.background = "#87CEFA";
+    }
+    updateUI();
+  };
+
+  btn.ondblclick = () => {
+    currentPerson = name;
+    alert(name + " 시간표 입력 모드");
+  };
+
+  document.getElementById("buttons").appendChild(btn);
+}
+
+// 클릭해서 입력
+cells.forEach(cell => {
+  const index = cell.dataset.index;
 
   cell.addEventListener("click", () => {
-    const subject = prompt("과목 입력:");
+    if (!currentPerson) return;
 
-    if (!subject) return;
+    const subject = prompt(`${currentPerson} 과목 입력`);
 
-    if (currentMode === "me") {
-      mySchedule[index] = subject;
-    } else {
-      friendSchedule[index] = subject;
+    if (subject !== null) {
+      schedules[currentPerson][index] = subject;
+      updateUI();
     }
-
-    updateUI();
   });
 });
 
+// UI 업데이트
 function updateUI() {
-  cells.forEach((cell, index) => {
-    const my = mySchedule[index];
-    const friend = friendSchedule[index];
+  cells.forEach(cell => {
+    const index = cell.dataset.index;
+
+    const active = selected.length ? selected : [];
+
+    const peopleWithClass = active.filter(name => schedules[name][index]);
 
     cell.textContent = "";
 
-    if (my && friend) {
-      cell.textContent = my;
-      cell.style.backgroundColor = "purple";
+    if (active.length === 0) {
+      cell.style.background = "";
+      return;
+    }
+
+    if (peopleWithClass.length === 0) {
+      // 공강
+      cell.textContent = "";
+      cell.style.background = "";
+    } else if (peopleWithClass.length === active.length) {
+      // 전원 수업
+      cell.textContent = peopleWithClass.join(", ");
+      cell.style.background = "purple";
       cell.style.color = "white";
-    } else if (my) {
-      cell.textContent = my;
-      cell.style.backgroundColor = "#87CEFA";
-      cell.style.color = "black";
-    } else if (friend) {
-      cell.textContent = friend;
-      cell.style.backgroundColor = "rgba(255, 0, 0, 0.3)";
-      cell.style.color = "black";
     } else {
-      cell.style.backgroundColor = "";
+      // 일부만 수업
+      cell.textContent = peopleWithClass.join(", ");
+      cell.style.background = "orange";
+      cell.style.color = "black";
     }
   });
 }
-
-updateUI();

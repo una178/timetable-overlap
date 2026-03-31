@@ -3,6 +3,15 @@ body {
   text-align: center;
 }
 
+.controls {
+  margin-bottom: 10px;
+}
+
+#buttons button {
+  margin: 5px;
+  padding: 5px 10px;
+}
+
 .timetable {
   display: grid;
   grid-template-columns: 60px repeat(5, 1fr);
