@@ -12,11 +12,13 @@
 <div class="controls">
   <input type="text" id="nameInput" placeholder="이름 입력">
   <button onclick="addPerson()">추가</button>
+  <button onclick="resetCurrent()">현재 사람 초기화</button>
+  <button onclick="resetData()">전체 초기화</button>
 </div>
 
 <div id="buttons"></div>
 
-<div class="timetable" id="timetable">
+<div class="timetable">
   <div class="header">시간</div>
   <div class="header">월</div>
   <div class="header">화</div>
@@ -24,11 +26,9 @@
   <div class="header">목</div>
   <div class="header">금</div>
 
-  <!-- 1~9교시 -->
-  <!-- 반복 -->
   <script>
     for(let i=1;i<=9;i++){
-      document.write(`<div>${i}</div>`);
+      document.write(`<div class="time">${i}</div>`);
       for(let j=0;j<5;j++){
         document.write(`<div class="cell" data-index="${(i-1)*5+j}"></div>`);
       }

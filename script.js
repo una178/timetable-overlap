@@ -1,15 +1,15 @@
 const cells = document.querySelectorAll(".cell");
 
-let schedules = {}; // {이름: []}
+let schedules = {};
 let selected = [];
 let currentPerson = null;
 
-// 🔥 데이터 저장
+// 저장
 function saveData() {
   localStorage.setItem("timetableData", JSON.stringify(schedules));
 }
 
-// 🔥 데이터 불러오기
+// 불러오기
 function loadData() {
   const data = localStorage.getItem("timetableData");
 
@@ -19,22 +19,25 @@ function loadData() {
     for (let name in schedules) {
       createButton(name);
     }
+
+    currentPerson = Object.keys(schedules)[0];
   }
 }
 
 // 사람 추가
 function addPerson() {
-  const name = document.getElementById("nameInput").value;
+  const input = document.getElementById("nameInput");
+  const name = input.value.trim();
+
   if (!name || schedules[name]) return;
 
-  schedules[name] = Array(45).fill(""); // 9교시 x 5일
+  schedules[name] = Array(45).fill("");
   createButton(name);
 
   if (!currentPerson) currentPerson = name;
 
-  document.getElementById("nameInput").value = "";
-
-  saveData(); // 추가 후 저장
+  input.value = "";
+  saveData();
 }
 
 // 버튼 생성
@@ -61,7 +64,7 @@ function createButton(name) {
   document.getElementById("buttons").appendChild(btn);
 }
 
-// 칸 클릭 → 시간표 입력
+// 칸 클릭 → 입력
 cells.forEach(cell => {
   const index = cell.dataset.index;
 
@@ -72,7 +75,7 @@ cells.forEach(cell => {
 
     if (subject !== null) {
       schedules[currentPerson][index] = subject;
-      saveData(); // 🔥 입력할 때마다 저장
+      saveData();
       updateUI();
     }
   });
@@ -83,35 +86,44 @@ function updateUI() {
   cells.forEach(cell => {
     const index = cell.dataset.index;
 
-    const active = selected.length ? selected : [];
-
+    const active = selected.length ? selected : [currentPerson];
     const peopleWithClass = active.filter(name => schedules[name][index]);
 
     cell.textContent = "";
     cell.style.color = "black";
 
-    if (active.length === 0) {
-      cell.style.background = "";
-      return;
-    }
-
     if (peopleWithClass.length === 0) {
-      // 공강 → 표시 안 함
-      cell.textContent = "";
       cell.style.background = "";
     } else if (peopleWithClass.length === active.length) {
-      // 전원 수업
       cell.textContent = peopleWithClass.join(", ");
       cell.style.background = "purple";
       cell.style.color = "white";
     } else {
-      // 일부만 수업
       cell.textContent = peopleWithClass.join(", ");
       cell.style.background = "orange";
     }
   });
 }
 
-// 🔥 페이지 로드 시 실행
+// 🔥 현재 사람 초기화
+function resetCurrent() {
+  if (!currentPerson) return;
+
+  if (confirm(currentPerson + " 시간표를 초기화할까요?")) {
+    schedules[currentPerson] = Array(45).fill("");
+    saveData();
+    updateUI();
+  }
+}
+
+// 🔥 전체 초기화
+function resetData() {
+  if (confirm("전체 데이터를 초기화할까요?")) {
+    localStorage.removeItem("timetableData");
+    location.reload();
+  }
+}
+
+// 실행
 loadData();
 updateUI();
